@@ -1,0 +1,6 @@
+<bin name="vbfjtagTest" file="vbfjtagTest.cc">
+    <use name="HHTools/VBFjTag"/>
+    <use name="PhysicsTools/TensorFlow"/>
+    <use name="tensorflow" />
+    <use name="tensorflow-cc" />
+</bin>
