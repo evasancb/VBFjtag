@@ -6,7 +6,7 @@ int main(int argc, char *argv[])
     std::array <std::string, 2> models;
     for(size_t n = 0; n < 2; ++n) {
         std::ostringstream ss_model;
-        ss_model << "HHTools/VBFjTag/models/VBFjTag_" << "_par_" << n;
+        ss_model << "HHTools/VBFjTag/models/VBFjTag" << "_par_" << n;
         models.at(n) = ss_model.str();
     }
     vbf_tagger::VBFjetTag test(models);
