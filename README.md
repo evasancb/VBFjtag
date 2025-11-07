@@ -38,6 +38,8 @@ https://twiki.cern.ch/twiki/bin/viewauth/CMS/DoubleHiggsToBBTauTauWorkingLegacyR
 1. jet_btagScore: The score of the b-jet candidate given by the b-tagger : ParticleNet
 1. jet_htt_dphi: Phi between the b-jet and the visible 4-momentum of the HTT.
 1. jet_isbjet: 1 for jets tagged as b-jet; 0 for non tagged b-jets
+1. jet_centrality: 1 - (2 * |eta_j - eta_c|) / (eta_max - eta_min), con eta_c = (eta_max + eta_min)/2
+1. jet_isolation: min DeltaR(jj)
 1. era_id: 0 - 2022preEE, 1 - 2022postEE, 2 - 2023preBPix, 3 - 2023postBPix
 1. channelId: 0 - MuTau, 1 - ETau, 2 - TauTau, 3 - MuMu, 4 - EE, 5 - EMu
 1. htt_pt: pT of visible 4-momentum of the HTT candidate.

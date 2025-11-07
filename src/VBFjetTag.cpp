@@ -17,6 +17,7 @@ std::vector<float> VBFjetTag::GetScore(const std::vector<float>& jet_pt, const s
                                      const std::vector<float>& rel_jet_M_pt, const std::vector<float>& rel_jet_E_pt,
                                      const std::vector<float>& jet_htt_deta, const std::vector<float>& jet_btagScore,
                                      const std::vector<float>& jet_htt_dphi, const std::vector<bool>& jet_isbjet,
+                                     const std::vector<float>& jet_centrality, const std::vector<float>& jet_isolation,
                                      int sample_year, int channelId, float htt_pt, float htt_eta, float htt_met_dphi, 
                                      float rel_met_pt_htt_pt, float htt_scalar_pt, unsigned long long parity)
                                      
@@ -36,6 +37,8 @@ std::vector<float> VBFjetTag::GetScore(const std::vector<float>& jet_pt, const s
         x.tensor<float, 3>()(0, n_jet, InputVars::vars::jet_btagScore) = jet_btagScore.at(jet_index);
         x.tensor<float, 3>()(0, n_jet, InputVars::vars::jet_htt_dphi) = jet_htt_dphi.at(jet_index);
         x.tensor<float, 3>()(0, n_jet, InputVars::vars::jet_isbjet) = jet_isbjet.at(jet_index);
+        x.tensor<float, 3>()(0, n_jet, InputVars::vars::jet_centrality) = jet_centrality.at(jet_index);
+        x.tensor<float, 3>()(0, n_jet, InputVars::vars::jet_isolation) = jet_isolation.at(jet_index);
         x.tensor<float, 3>()(0, n_jet, InputVars::vars::sample_year) = sample_year;
         x.tensor<float, 3>()(0, n_jet, InputVars::vars::channelId) = channelId;
         x.tensor<float, 3>()(0, n_jet, InputVars::vars::htt_pt) = htt_pt;

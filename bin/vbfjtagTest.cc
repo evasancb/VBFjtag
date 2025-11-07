@@ -19,7 +19,9 @@ int main(int argc, char *argv[])
         std::vector<float> jet_htt_deta;
         std::vector<float> jet_btagScore;
         std::vector<float> jet_htt_dphi;
-        std::vector<bool> isbjet; 
+        std::vector<bool> isbjet;
+        std::vector<float> jet_centrality;
+        std::vector<float> jet_isolation; 
         int sample_year;
         int channelId;
         float htt_pt;
@@ -31,11 +33,13 @@ int main(int argc, char *argv[])
         inputVariables() {}
          inputVariables(std::vector<float> _jet_pt, std::vector<float> _jet_eta, std::vector<float> _rel_jet_M_pt,
          std::vector<float> _rel_jet_E_pt, std::vector<float> _jet_htt_deta, std::vector<float> _jet_btagScore,
-         std::vector<float> _jet_htt_dphi, const std::vector<bool>& _isbjet, int _sample_year, int _channelId,
-         float _htt_pt, float _htt_eta, float _htt_met_dphi, float _rel_met_pt_htt_pt,  float _htt_scalar_pt)
+         std::vector<float> _jet_htt_dphi, const std::vector<bool>& _isbjet, const std::vector<float>& _jet_centrality, 
+         const std::vector<float>& _jet_isolation, int _sample_year, int _channelId, float _htt_pt,
+         float _htt_eta, float _htt_met_dphi, float _rel_met_pt_htt_pt,  float _htt_scalar_pt)
             : jet_pt(_jet_pt), jet_eta(_jet_eta), rel_jet_M_pt(_rel_jet_M_pt), rel_jet_E_pt(_rel_jet_E_pt),
               jet_htt_deta(_jet_htt_deta), jet_btagScore(_jet_btagScore), jet_htt_dphi(_jet_htt_dphi),
-              isbjet(_isbjet), sample_year(_sample_year), channelId(_channelId), htt_pt(_htt_pt), htt_eta(_htt_eta),
+              isbjet(_isbjet), jet_centrality(_jet_centrality), jet_isolation(_jet_isolation),
+              sample_year(_sample_year), channelId(_channelId), htt_pt(_htt_pt), htt_eta(_htt_eta),
               htt_met_dphi(_htt_met_dphi), rel_met_pt_htt_pt(_rel_met_pt_htt_pt), htt_scalar_pt(_htt_scalar_pt){}
     };
 
@@ -48,6 +52,8 @@ int main(int argc, char *argv[])
                        {0.9823262 , 0.98088145, 0.01650896, 0.009126  , 0.00841168},
                        {-2.524436 , -2.967691 ,  1.731121 ,  0.3825634,  2.2681534},
                        {1, 0, 0, 1, 0},
+                       {0.0, 0.0, 0.539275, 0.705573, 0.576545},
+                       {2.12163, 2.59726, 2.12163, 2.1507, 2.59726},
                        2016, 2, 97.48188, 0.30214196, -2.1884985, 0.9407843, 112.31701 ),
         inputVariables({114.95624 , 157.82753 ,  20.41763 ,  22.221668}, // example values from event number with parity even
                        {-1.6304693, -2.1735725,  0.591494 ,  1.3925074},
@@ -57,6 +63,8 @@ int main(int argc, char *argv[])
                       {0.9529675 , 0.82010823, 0.00897067, 0.00666698},
                       {3.0571172, -2.6735168,  2.7761812, -2.7077053},
                       {1, 0, 0, 1},
+                      {0.652137, 0.0, 0.800055, 0.0},
+                      {1.3832, 4.81234, 3.37084, 1.3832},
                       2016, 0, 306.61905, -0.6689993, 0.18338251,
                       0.32046267, 315.96207 )
     };
