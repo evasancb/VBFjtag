@@ -74,6 +74,7 @@ int main(int argc, char *argv[])
                                              input_variables.at(i).rel_jet_M_pt, input_variables.at(i).rel_jet_E_pt,
                                              input_variables.at(i).jet_htt_deta, input_variables.at(i).jet_btagScore,
                                              input_variables.at(i).jet_htt_dphi, input_variables.at(i).isbjet,
+                                             input_variables.at(i).jet_centrality, input_variables.at(i).jet_isolation,
                                              input_variables.at(i).sample_year,
                                              input_variables.at(i).channelId, input_variables.at(i).htt_pt, 
                                              input_variables.at(i).htt_eta, input_variables.at(i).htt_met_dphi,
