@@ -1,10 +1,36 @@
 #include "../interface/VBFjetTag.h"
 
+#include "PhysicsTools/TensorFlow/interface/TensorFlow.h"
+#include "tensorflow/core/protobuf/rewriter_config.pb.h"
+
+using tensorflow::RewriterConfig;
 namespace vbf_tagger{
 
 VBFjetTag::VBFjetTag(const std::array<std::string, VBFjetTag::n_models>& models)
 {
     tensorflow::Options default_options{};
+    // Disable Grappler optimizations. from https://github.com/tensorflow/tensorflow/blob/181a9a13e629ed545ace9e154310c8706ab202e7/tensorflow/core/grappler/clusters/cluster.cc#L82
+    auto rewriter_config =
+        default_options._options.config.mutable_graph_options()->mutable_rewrite_options();
+    rewriter_config->set_layout_optimizer(RewriterConfig::OFF);
+    rewriter_config->set_disable_model_pruning(true);
+    rewriter_config->set_function_optimization(RewriterConfig::OFF);
+    rewriter_config->set_arithmetic_optimization(RewriterConfig::OFF);
+    rewriter_config->set_loop_optimization(RewriterConfig::OFF);
+    rewriter_config->set_dependency_optimization(RewriterConfig::OFF);
+    rewriter_config->set_constant_folding(RewriterConfig::OFF);
+    rewriter_config->set_memory_optimization(RewriterConfig::NO_MEM_OPT);
+    rewriter_config->set_shape_optimization(RewriterConfig::OFF);
+    rewriter_config->set_remapping(RewriterConfig::OFF);
+
+    rewriter_config->set_common_subgraph_elimination(RewriterConfig::OFF); // added
+
+    rewriter_config->set_pin_to_host_optimization(RewriterConfig::OFF);
+    rewriter_config->mutable_auto_parallel()->set_enable(false);
+    rewriter_config->clear_optimizers();
+
+    //          rewrite_cfg.common_subgraph_elimination() != RewriterConfig::OFF ||
+
     for(size_t n = 0; n < VBFjetTag::n_models; ++n) {
         nn_descs.at(n).graph.reset(tensorflow::loadMetaGraphDef(models.at(n)));
         nn_descs.at(n).session = tensorflow::createSession(nn_descs.at(n).graph.get(), models.at(n), default_options);

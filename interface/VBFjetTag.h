@@ -1,6 +1,12 @@
 #include <vector>
 #include <string>
-#include "PhysicsTools/TensorFlow/interface/TensorFlow.h"
+#include <memory>
+#include <array>
+
+namespace tensorflow {
+    class Session;
+    class MetaGraphDef;
+}
 
 namespace vbf_tagger{
 
