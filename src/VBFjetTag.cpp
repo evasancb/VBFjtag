@@ -6,9 +6,13 @@
 using tensorflow::RewriterConfig;
 namespace vbf_tagger{
 
-VBFjetTag::VBFjetTag(const std::array<std::string, VBFjetTag::n_models>& models)
+VBFjetTag::VBFjetTag(const std::array<std::string, VBFjetTag::n_models>& models, bool useMetaGraph)
+ : useMetaGraph_(useMetaGraph)
 {
     tensorflow::Options default_options{};
+    // Tensorflow optimizations are run everytime tensorflow::run is called, so it is actually faster to disable them entirely
+    // To study : maybe some of them are beneficial
+    // Another option to study is check "frozen graph" loading mode (loadGraphDef instead of loadMetaGraphDef)
     // Disable Grappler optimizations. from https://github.com/tensorflow/tensorflow/blob/181a9a13e629ed545ace9e154310c8706ab202e7/tensorflow/core/grappler/clusters/cluster.cc#L82
     auto rewriter_config =
         default_options._options.config.mutable_graph_options()->mutable_rewrite_options();
@@ -32,10 +36,26 @@ VBFjetTag::VBFjetTag(const std::array<std::string, VBFjetTag::n_models>& models)
     //          rewrite_cfg.common_subgraph_elimination() != RewriterConfig::OFF ||
 
     for(size_t n = 0; n < VBFjetTag::n_models; ++n) {
-        nn_descs.at(n).graph.reset(tensorflow::loadMetaGraphDef(models.at(n)));
-        nn_descs.at(n).session = tensorflow::createSession(nn_descs.at(n).graph.get(), models.at(n), default_options);
-        nn_descs.at(n).input_layer = "serving_default_input_1:0";
-        nn_descs.at(n).output_layer = "StatefulPartitionedCall:0";
+         if (useMetaGraph) {
+            nn_descs.at(n).metaGraph.reset(tensorflow::loadMetaGraphDef(models.at(n)));
+            nn_descs.at(n).session = tensorflow::createSession(nn_descs.at(n).metaGraph.get(), models.at(n), default_options);
+            nn_descs.at(n).input_layer = "serving_default_input_1:0";
+            nn_descs.at(n).output_layer = "StatefulPartitionedCall:0";
+        } else {
+            nn_descs.at(n).graph.reset(tensorflow::loadGraphDef(models.at(n)));
+            nn_descs.at(n).session = tensorflow::createSession(nn_descs.at(n).graph.get(), default_options);
+
+            tensorflow::CallableOptions call_opts;
+            call_opts.add_feed("MyInput:0");
+            call_opts.add_fetch("Identity:0");
+
+            call_opts.mutable_run_options()->set_inter_op_thread_pool(-1); // no multithreading
+
+            tensorflow::Session::CallableHandle& handle = nn_descs.at(n).callableHandle ;
+            tensorflow::Status s = nn_descs.at(n).session->MakeCallable(call_opts, &handle);
+            if (!s.ok())
+                throw std::runtime_error("VBFjtag initalization failed");
+        }
     }
 }
 
@@ -75,8 +95,15 @@ std::vector<float> VBFjetTag::GetScore(const std::vector<float>& jet_pt, const s
     }
     std::vector<tensorflow::Tensor> pred_vec;
     parity = parity % n_models;
-    tensorflow::run(nn_descs.at(parity).session, { { nn_descs.at(parity).input_layer, x } },
+    if (useMetaGraph_) {
+        tensorflow::run(nn_descs.at(parity).session, { { nn_descs.at(parity).input_layer, x } },
                     { nn_descs.at(parity).output_layer }, &pred_vec);
+    }
+    else {
+        tensorflow::Status s = nn_descs.at(parity).session->RunCallable(nn_descs.at(parity).callableHandle, {x}, &pred_vec, nullptr);
+        if (!s.ok())
+            throw std::runtime_error("VBFjtag inference failed"+s.ToString());
+    }
 
     std::vector<float> scores(jet_pt.size(), 0);
     for (size_t jet_index = 0; jet_index < n_jets_evt; ++jet_index) {
