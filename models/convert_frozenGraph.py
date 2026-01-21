@@ -41,7 +41,6 @@ opt_graph = optimize_for_inference_lib.optimize_for_inference(pre_opti_inference
                                                               ["Identity"],
                                                               #['serving_default'], 
                                                               #[t.name.split(":")[0] for t in frozen_func.outputs], 
- 
                                                              dtypes.float32.as_datatype_enum)
 
 
