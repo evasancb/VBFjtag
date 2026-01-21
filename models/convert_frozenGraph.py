@@ -13,7 +13,6 @@ from tensorflow.python.platform import gfile
 import sys
 
 
-
 model = tf.saved_model.load(sys.argv[1])
 
 print(model.signatures["serving_default"].inputs)
