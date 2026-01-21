@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Optimise and convert an HHbtag model in SavedModel format into a TensorFlow frozen graph
+# Optimise and convert an VBFjTag model in SavedModel format into a TensorFlow frozen graph
 
 import tensorflow as tf
 # tfv1 = tf.compat.v1
