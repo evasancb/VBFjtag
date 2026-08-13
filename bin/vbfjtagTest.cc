@@ -1,15 +1,24 @@
 #include <map>
+#include <string>
+#include <iostream>
+#include <sstream>
+#include <vector>
 #include "../interface/VBFjetTag.h"
 
 int main(int argc, char *argv[])
 {
+    std::string version = ""; // default version
+    if (argc > 1) {
+        version = std::string("_") + argv[1];
+    }
     std::array <std::string, 2> models;
     for(size_t n = 0; n < 2; ++n) {
         std::ostringstream ss_model;
-        ss_model << "HHTools/VBFjTag/models/VBFjTag_" << "_par_" << n;
+        ss_model << "HHTools/VBFjTag/models/VBFjTag" << version << "_par_" << n;
         models.at(n) = ss_model.str();
     }
     vbf_tagger::VBFjetTag test(models);
+
 
     struct inputVariables {
         std::vector<float> jet_pt;

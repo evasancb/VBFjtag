@@ -1,6 +1,14 @@
 #include <vector>
 #include <string>
-#include "PhysicsTools/TensorFlow/interface/TensorFlow.h"
+#include <memory>
+#include <array>
+
+// Forward-declare to avoid JIT of tensorflow header
+namespace tensorflow {
+    class Session;
+    class MetaGraphDef;
+    class GraphDef;
+}
 
 namespace vbf_tagger{
 
@@ -16,16 +24,19 @@ public:
     static constexpr size_t max_n_jets = 10;
     static constexpr size_t n_variables = 11;
 
-    VBFjetTag(const std::array <std::string, n_models>& models);
+    VBFjetTag(const std::array <std::string, n_models>& models, bool useMetaGraph=true);
     ~VBFjetTag();
 
 
 
     struct NNDescriptor {
-        std::unique_ptr<tensorflow::MetaGraphDef> graph;
+        // We use either metaGraph (SavedModel format) OR graph (frozen graph format, faster loading)
+        std::unique_ptr<tensorflow::MetaGraphDef> metaGraph;
+        std::unique_ptr<tensorflow::GraphDef> graph;
         tensorflow::Session* session;
         std::string input_layer;
         std::string output_layer;
+        int64_t callableHandle; // To work with tensorflow::Session::RunCallable
     };
 
     std::vector<float> GetScore(const std::vector<float>& jet_pt, const std::vector<float>& jet_eta,
@@ -36,5 +47,6 @@ public:
 
 private:
     std::array<NNDescriptor, n_models> nn_descs;
+    bool useMetaGraph_;
 };
 }// namespace vbf_tagger
